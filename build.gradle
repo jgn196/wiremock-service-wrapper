@@ -1,0 +1,42 @@
+apply plugin: 'java'
+apply plugin: 'distribution'
+
+group 'name.jgn.servicewrappers'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+
+    // WinRun4J is not in the Maven central repository, so we get it from a project sub-directory.
+    flatDir {
+        dirs 'winrun4j/bin'
+    }
+}
+
+dependencies {
+    compile "com.github.tomakehurst:wiremock-standalone:2.18.0"
+    compile name: 'WinRun4J'
+}
+
+// A new task that creates a "Fat JAR" file (one that contains the project classes and all their dependencies).
+task fatJar(type: Jar) {
+    classifier = 'all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+/*
+ Files in src/main/dist automatically get add to the distribution archives.
+
+ This adds the "Fat JAR" and the WinRun4J launcher to the distributions too.
+ */
+distributions {
+    main {
+        contents {
+            from fatJar
+            from('winrun4j/bin/WinRun4J64c.exe') { rename '.*', 'service.exe' }
+        }
+    }
+}
