@@ -2,7 +2,7 @@ apply plugin: 'java'
 apply plugin: 'distribution'
 
 group 'name.jgn.servicewrappers'
-version '1.0'
+version '2.0-SNAPSHOT'
 
 sourceCompatibility = 1.8
 
